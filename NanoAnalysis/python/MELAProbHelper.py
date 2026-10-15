@@ -141,9 +141,9 @@ class MELAProbHelper():
             if prob["addPAux"]:
                 self.out.branch(branchname + "_aux", "F", lenVar=lenVar, limitedPrecision=16, title=title + " auxiliary")
             if prob["addPmavjj"]:
-                self.out.branch(branchname + "_mavjj", "F", lenVar=lenVar, title=title + " mavjj")
+                self.out.branch(branchname, "F", lenVar=lenVar, title=title + " mavjj")
             if prob["addPmavjj_true"]:
-                self.out.branch(branchname + "_mavjj_true", "F", lenVar=lenVar, title=title + " mavjj true")
+                self.out.branch(branchname, "F", lenVar=lenVar, title=title + " mavjj true")
         
     def bookProbs(self, wrappedOutputTree): 
         #this needs a per-module lenVar. 
@@ -168,9 +168,9 @@ class MELAProbHelper():
                 if prob["addPAux"]:
                     self.out.branch(prob["branchname"]+"_aux", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined auxiliary probability")
                 if prob["addPmavjj"]:
-                    self.out.branch(prob["branchname"]+"_mavjj", "F", lenVar=lenVar_, title="User-defined mavjj probability")
+                    self.out.branch(prob["branchname"], "F", lenVar=lenVar_, title="User-defined mavjj probability")
                 if prob["addPmavjj_true"]:
-                    self.out.branch(prob["branchname"]+"_mavjj_true", "F", lenVar=lenVar_, title="User-defined mavjj_true probability")
+                    self.out.branch(prob["branchname"], "F", lenVar=lenVar_, title="User-defined mavjj_true probability")
                 self._bookVariedOutputs(prob, lenVar_)
 
     @staticmethod
@@ -456,9 +456,9 @@ class MELAProbHelper():
                 if MELA_addPAux:
                     self.out.fillBranch(MELA_branchname+"_aux", probVec_PAux)
                 if MELA_addPmavjj:
-                    self.out.fillBranch(MELA_branchname+"_mavjj", probVec_mavjj)
+                    self.out.fillBranch(MELA_branchname, probVec_mavjj)
                 if MELA_addPmavjj_true:
-                    self.out.fillBranch(MELA_branchname+"_mavjj_true", probVec_mavjj_true)
+                    self.out.fillBranch(MELA_branchname, probVec_mavjj_true)
 
             if candAssociatedVariations is not None and selectedJetCounts is not None:
                 self._fillJetVariedProbs(
