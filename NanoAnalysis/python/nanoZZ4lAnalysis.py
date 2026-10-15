@@ -337,7 +337,7 @@ branchsel_Electron = ['drop Electron_cut*', 'drop Electron_dr*', 'drop Electron_
 
 branchsel_Muon = ['drop Muon_jet*', 'drop Muon_medium*', 'drop Muon_mini*', 'drop Muon_multi*', 'drop Muon_mva*', 'keep Muon_mvaLowPt', 'drop Muon_pfIsoId', 'drop Muon_pfRelIso04_all', 'drop Muon_puppiIsoId', 'drop Muon_soft*', 'drop Muon_tight*', 'drop Muon_tk*', 'drop Muon_triggerIdLoose', 'drop Muon_tune*',
                 *(['drop Muon_promptMVA'] if NANOVERSION>12 else [])]
-branchsel_Jet = ['drop Jet_PNet*', 'drop Jet_hf*', 'keep Jet_*EF', 'drop Jet_muonSubtr*',
+branchsel_Jet = ['drop Jet_PNet*', 'drop Jet_btag*', 'keep Jet_btagDeepFlavB', 'keep Jet_btagPNetB', 'keep Jet_btag*ParTAK4B', 'drop Jet_hf*', 'keep Jet_*EF', 'drop Jet_muonSubtr*',
                 *(['drop Jet_UParT*', 'drop Jet_puIdDisc'] if NANOVERSION>12 else [])]
 
 ### Branches to be read and written to output
