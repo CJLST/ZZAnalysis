@@ -337,10 +337,8 @@ branchsel_Electron = ['drop Electron_cut*', 'drop Electron_dr*', 'drop Electron_
 
 branchsel_Muon = ['drop Muon_jet*', 'drop Muon_medium*', 'drop Muon_mini*', 'drop Muon_multi*', 'drop Muon_mva*', 'keep Muon_mvaLowPt', 'drop Muon_pfIsoId', 'drop Muon_pfRelIso04_all', 'drop Muon_puppiIsoId', 'drop Muon_soft*', 'drop Muon_tight*', 'drop Muon_tk*', 'drop Muon_triggerIdLoose', 'drop Muon_tune*',
                 *(['drop Muon_promptMVA'] if NANOVERSION>12 else [])]
-                       
-branchsel_Jet = ['drop Jet*', 'keep Jet_pt', 'keep Jet_eta', 'keep Jet_phi', 'keep Jet_mass', 'keep Jet_hadronFlavour', 'keep Jet_rawFactor', 'keep Jet_area', 'keep Jet_*EF', 'keep Jet_*Idx*', 'keep Jet_n*s',
-                *(['keep Jet_jetId', 'keep Jet_btagPNetB', 'keep Jet_btagRobustParTAK4B'] if NANOVERSION<=12 else ['keep Jet_btagUParTAK4B', 'keep Jet_chMultiplicity', 'keep Jet_neMultiplicity'])]
-
+branchsel_Jet = ['drop Jet_PNet*', 'drop Jet_hf*', 'keep Jet_*EF', 'drop Jet_muonSubtr*',
+                *(['drop Jet_UParT*', 'drop Jet_puIdDisc'] if NANOVERSION>12 else [])]
 
 ### Branches to be read and written to output
 branchsel_in = ['drop FatJet_*',
@@ -392,6 +390,7 @@ if IsMC:
     branchsel_out.extend(['keep GenPart*',
                           'keep GenZZ*',
                           'keep *eight', # Generator_weight + custom weights
+                          *(['keep KFactor*'] if (APPLY_K_NNLOQCD_ZZGG>0 or APPLY_K_NNLOQCD_NLOEW_ZZQQB) else []),
                           'keep puWeight*',
                           'keep HTXS_*',
                           'keep Pileup*',
