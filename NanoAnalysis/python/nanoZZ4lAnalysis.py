@@ -331,6 +331,15 @@ if CANDSTOSTORE == 'AllWithRelaxedMuId' : # Add extra variables for ID studies
     from ZZAnalysis.NanoAnalysis.ZZIDStudies import *
     insertAfter(ZZSequence, 'ZZFiller', ZZIDStudies(doMuons=False, doElectrons=True))
 
+### Filters for branches that 
+branchsel_Electron = ['drop Electron_cut*', 'drop Electron_dr*', 'drop Electron_isPFcand', 'drop Electron_jet*', 'drop Electron_mini*', 'drop Electron_mva*', 'keep Electron_mvaHZZIso', 'drop Electron_photonIdx', 'drop Electron_seedi*', 'drop Electron_vid*',
+                       *(['drop Electron_PreshowerEnergy', 'drop Electron_gsf*','keep Electron_mvaIso_WPHZZ', 'drop Electron_pfRelIso04_all', 'drop Electron_promptMVA'] if NANOVERSION>12 else [])]
+
+branchsel_Muon = ['drop Muon_jet*', 'drop Muon_medium*', 'drop Muon_mini*', 'drop Muon_multi*', 'drop Muon_mva*', 'keep Muon_mvaLowPt', 'drop Muon_pfIsoId', 'drop Muon_pfRelIso04_all', 'drop Muon_puppiIsoId', 'drop Muon_soft*', 'drop Muon_tight*', 'drop Muon_tk*', 'drop Muon_triggerIdLoose', 'drop Muon_tune*',
+                *(['drop Muon_promptMVA'] if NANOVERSION>12 else [])]
+branchsel_Jet = ['drop Jet_PNet*', 'drop Jet_btag*', 'keep Jet_btagDeepFlavB', 'keep Jet_btagPNetB', 'keep Jet_btag*ParTAK4B', 'drop Jet_hf*', 'keep Jet_*EF', 'drop Jet_muonSubtr*',
+                *(['drop Jet_UParT*', 'drop Jet_puIdDisc'] if NANOVERSION>12 else [])]
+
 ### Branches to be read and written to output
 branchsel_in = ['drop FatJet_*',
                 'drop IsoTrack*',
@@ -339,7 +348,11 @@ branchsel_in = ['drop FatJet_*',
                 'drop SV_*',
                 'drop SoftActivityJet_*',
                 'drop SubJet*',
-                'drop Tau*',]
+                'drop Tau*',
+                *(branchsel_Electron),
+                *(branchsel_Muon),
+                *(branchsel_Jet),                
+                ]
 
 branchsel_out = ['drop *',
                  'keep run',
@@ -366,6 +379,9 @@ branchsel_out = ['drop *',
                  #'keep Flag*',
                  *(['keep MET_pt'] if NANOVERSION <=12 else ['keep PFMET_pt']),
                  *(['keep LHEMela*'] if ADD_LHE_PROB else []),
+                 *(branchsel_Electron),
+                 *(branchsel_Muon),
+                 *(branchsel_Jet),                
                  ]
 
 if IsMC:
@@ -374,6 +390,7 @@ if IsMC:
     branchsel_out.extend(['keep GenPart*',
                           'keep GenZZ*',
                           'keep *eight', # Generator_weight + custom weights
+                          *(['keep KFactor*'] if (APPLY_K_NNLOQCD_ZZGG>0 or APPLY_K_NNLOQCD_NLOEW_ZZQQB) else []),
                           'keep puWeight*',
                           'keep HTXS_*',
                           'keep Pileup*',
