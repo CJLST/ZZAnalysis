@@ -58,7 +58,8 @@ class MELAProbHelper():
                 "ispm4l": None,
                 'addPmavjj': False,
                 'addPmavjj_true': False,
-                "dividep": None
+                "dividep": None,
+                "H_MassWidth": [125, 0.00407]
             }
         
 
@@ -141,9 +142,9 @@ class MELAProbHelper():
             if prob["addPAux"]:
                 self.out.branch(branchname + "_aux", "F", lenVar=lenVar, limitedPrecision=16, title=title + " auxiliary")
             if prob["addPmavjj"]:
-                self.out.branch(branchname, "F", lenVar=lenVar, title=title + " mavjj")
+                self.out.branch(branchname + "_mavjj", "F", lenVar=lenVar, title=title + " mavjj")
             if prob["addPmavjj_true"]:
-                self.out.branch(branchname, "F", lenVar=lenVar, title=title + " mavjj true")
+                self.out.branch(branchname + "_mavjj_true", "F", lenVar=lenVar, title=title + " mavjj true")
         
     def bookProbs(self, wrappedOutputTree): 
         #this needs a per-module lenVar. 
@@ -168,9 +169,9 @@ class MELAProbHelper():
                 if prob["addPAux"]:
                     self.out.branch(prob["branchname"]+"_aux", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined auxiliary probability")
                 if prob["addPmavjj"]:
-                    self.out.branch(prob["branchname"], "F", lenVar=lenVar_, title="User-defined mavjj probability")
+                    self.out.branch(prob["branchname"]+"_mavjj", "F", lenVar=lenVar_, title="User-defined mavjj probability")
                 if prob["addPmavjj_true"]:
-                    self.out.branch(prob["branchname"], "F", lenVar=lenVar_, title="User-defined mavjj_true probability")
+                    self.out.branch(prob["branchname"]+"_mavjj_true", "F", lenVar=lenVar_, title="User-defined mavjj_true probability")
                 self._bookVariedOutputs(prob, lenVar_)
 
     @staticmethod
@@ -268,6 +269,11 @@ class MELAProbHelper():
                             self.MELA.setMelaLeptonInterference(state["leptonInterference"])
                             for coupl, coupl_val in prob["Couplings"].items():
                                 setattr(self.MELA, coupl, coupl_val)
+                            
+
+                            self.MELA.setMelaHiggsMassWidth(prob['H_MassWidth'][0], prob['H_MassWidth'][1], 0) 
+                            self.MELA.setMelaHiggsMassWidth(prob['H_MassWidth'][0], prob['H_MassWidth'][1], 1) 
+
                             if prob["match_mX"]:
                                 mass = candDaughters[iCand].MTotal()
                                 self.MELA.setMelaHiggsMassWidth(mass, 0.00001, 0)
@@ -338,11 +344,15 @@ class MELAProbHelper():
                 MELA_divideP_idx = prob["dividep_idx"]
                 MELA_branchname = prob["branchname"]
                 MELA_addPAux = prob["addPAux"]
+                MELA_HMass = prob['H_MassWidth'][0]
+                MELA_HWidth = prob['H_MassWidth'][1]
 
                 ### Configure MELA for the event. 
                 self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
                 self.MELA.differentiate_HWW_HZZ = MELA_separatewwzz
                 self.MELA.setMelaLeptonInterference(MELA_leptoninterference)
+                self.MELA.setMelaHiggsMassWidth(MELA_HMass, MELA_HWidth, 0) 
+                self.MELA.setMelaHiggsMassWidth(MELA_HMass, MELA_HWidth, 1) 
 
                 # Define arrays to fill with the probabilites for each candidate
                 probVec = [self.notApplicableValue]*len(candDaughters)
@@ -456,9 +466,9 @@ class MELAProbHelper():
                 if MELA_addPAux:
                     self.out.fillBranch(MELA_branchname+"_aux", probVec_PAux)
                 if MELA_addPmavjj:
-                    self.out.fillBranch(MELA_branchname, probVec_mavjj)
+                    self.out.fillBranch(MELA_branchname+"_mavjj", probVec_mavjj)
                 if MELA_addPmavjj_true:
-                    self.out.fillBranch(MELA_branchname, probVec_mavjj_true)
+                    self.out.fillBranch(MELA_branchname+"_mavjj_true", probVec_mavjj_true)
 
             if candAssociatedVariations is not None and selectedJetCounts is not None:
                 self._fillJetVariedProbs(
