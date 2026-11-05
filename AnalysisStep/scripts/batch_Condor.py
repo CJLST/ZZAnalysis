@@ -47,190 +47,6 @@ def split(comps):
     return splitComps
 
 
-def batchScript( index, remoteDir=''):
-   '''prepare the Condor version of the batch script, to run on HTCondor'''
-#Note: ${VAR} in the script have to be escaped as ${{VAR}}
-# as the string is parsed through .format
-   script = """#!/bin/bash
-SUBMIT_DIR=$1
-TRANSFER_DIR={remoteDir}
-
-uname -srm
-
-# CMS env needs to be set manually in al9
-export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
-source $VO_CMS_SW_DIR/cmsset_default.sh 
-
-set -euo pipefail
-
-cd $SUBMIT_DIR
-eval $(scram ru -sh)
-
-cp run_cfg.py $_CONDOR_SCRATCH_DIR
-cd $_CONDOR_SCRATCH_DIR
-
-echo 'Running at:' $(date)
-echo "HOST=$(hostname)"
-eos version 2>/dev/null || true
-echo SUBMIT_DIR: $SUBMIT_DIR
-echo path: `pwd`
-
-cmsRunStatus=   #default for successful completion is an empty file
-cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt || cmsRunStatus=$?
-
-echo -n $cmsRunStatus > exitStatus.txt
-if [ -z $cmsRunStatus ]; then cmsRunStatus=0; fi
-echo 'cmsRun done at: ' $(date) with exit status: $cmsRunStatus
-gzip log.txt
-
-set +euo pipefail
-
-export ROOT_HIST=0
-if [ -s ZZ4lAnalysis.root ]; then
- root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
-elif [ -f  ZZ4lAnalysis.root ]; then
- echo moving away empty ZZ4lAnalysis.root file
- mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
-else
- echo ERROR: ZZ4lAnalysis.root file is missing
-fi
-
-echo "Files on node:"
-ls -la
-
-#delete mela stuff and $USER.cc
-rm -f br.sm1 br.sm2 ffwarn.dat input.DAT process.DAT "$USER.cc"
-
-#delete submission scripts, so that they are not copied back (which fails sometimes)
-rm -f run_cfg.py batchScript.sh
-
-echo '...done at' $(date)
-
-# Handle transfer of output to EOS. 
-# As copying back of files is handled automatically by condor, it must be overridden in condor.sub
-# NOTE: using the FUSE interface since eos commands do not appear to work reliably on batch (issues with permissions etc)
-if [ -n "$TRANSFER_DIR" ] ; then
-    p1=`dirname $SUBMIT_DIR`
-    p2=`basename $p1`
-    eosOutputPath=$TRANSFER_DIR/$p2/`basename $SUBMIT_DIR`
-    echo "Transferring output to: "$eosOutputPath
-    mkdir -p $eosOutputPath
-    cp ZZ4lAnalysis.root* *.txt *.gz ${{eosOutputPath}}/
-    echo "...done"
-fi
-
-exit $cmsRunStatus
-""" 
-   return script.format(remoteDir=remoteDir)
-
-def batchScriptNano( index, remoteDir=''):
-   '''prepare the Condor version of the batch script, to run on HTCondor'''
-   script = '''#!/bin/bash
-SUBMIT_DIR=$1
-TRANSFER_DIR={remoteDir}
-
-uname -srm
-
-# CMS env needs to be set manually in al9
-export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
-source $VO_CMS_SW_DIR/cmsset_default.sh 
-
-set -euo pipefail
-
-cd $SUBMIT_DIR
-eval $(scram ru -sh)
-
-cp run_cfg.py $_CONDOR_SCRATCH_DIR
-cd $_CONDOR_SCRATCH_DIR
-
-echo 'Running at:' $(date)
-echo "HOST=$(hostname)"
-eos version 2>/dev/null || true
-echo SUBMIT_DIR: $SUBMIT_DIR
-echo path: `pwd`
-
-exitStatus=   #default for successful completion is an empty file
-python3 run_cfg.py >& log.txt || exitStatus=$?
-
-set +euo pipefail
-
-echo -n $exitStatus > exitStatus.txt
-if [ -z $exitStatus ]; then exitStatus=0; fi
-echo 'job done at: ' $(date) with exit status: $exitStatus
-gzip log.txt
-
-export ROOT_HIST=0
-if [ -s ZZ4lAnalysis.root ]; then
-   root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
-   # The output file MUST be present when the condor transfer_output_files option is used.
-   touch ZZ4lAnalysis.root
-elif [ -f  ZZ4lAnalysis.root ]; then
-   echo "ERROR: ZZ4lAnalysis.root is empty"
-   if [ $exitStatus -eq "0"  ]; then exitStatus=999; fi
-else
-   echo ERROR: ZZ4lAnalysis.root file is missing
-   touch ZZ4lAnalysis.root
-   if [ $exitStatus -eq "0"  ]; then exitStatus=999; fi
-fi
-
-echo "Files on node:"
-ls -la
-
-echo '...done at' $(date)
-
-exit $exitStatus
-'''
-   return script.format(remoteDir=remoteDir)
-
-
-# Create the CONDOR submit file (one per submission).
-# transferOutput = False skips the automatic CONDOR transfer of output files to the submission dir
-def condorSubScript( index, mainDir, eosTransferPath="") :
-   '''prepare the Condor submition script'''
-   script = '''
-executable              = {mainDir}/$(directory)/batchScript.sh
-arguments               = {mainDir}/$(directory) $(ClusterId)$(ProcId)
-output                  = {mainDir}/$(directory)/log/$(ClusterId).$(ProcId).out
-error                   = {mainDir}/$(directory)/log/$(ClusterId).$(ProcId).err
-log                     = {mainDir}/log/$(ClusterId).log
-Initialdir              = {mainDir}/$(directory)
-MY.ChunkDir             = "$(directory)"
-request_memory          = '''+str(batchManager.jobmem)+'''
-#Possible values: longlunch, workday, tomorrow, etc.; cf. https://batchdocs.web.cern.ch/local/submit.html
-+JobFlavour             = "'''+batchManager.jobflavour+'''"
-{requirements}
-x509userproxy           = {home}/x509up_u{uid}
-
-#cf. https://www-auth.cs.wisc.edu/lists/htcondor-users/2010-September/msg00009.shtml
-periodic_remove         = JobStatus == 5
-
-transfer_output_files = log.txt.gz, exitStatus.txt, ZZ4lAnalysis.root
-{transfer}
-{materialize}
-'''   
-   if eosTransferPath == "" :
-       transfer = ""
-   else :
-       transfer = "output_destination = root://eosuser.cern.ch/"+eosTransferPath+"/$(directory)"
-
-   if batchManager.max_materialize > 0 :
-       materialize = 'max_materialize = '+str(batchManager.max_materialize)
-       if batchManager.eosSubmit and transfer == "" : # eossubmit schedd has a bug with setting relative paths with late materialization
-           transfer = f"output_destination = root://eosuser.cern.ch/{mainDir}/$(directory)"
-   else :
-       materialize = ''
-       
-   release=open('/etc/redhat-release','r').read()
-   req = ""
-   if "release 7" in release:
-       req = "requirements = (OpSysAndVer =?= \"CentOS7\")"
-   elif "release 8" in release: #use a Singularity container
-       req = "MY.WantOS = \"el8\""
-   elif "release 9" in release:
-       req = "requirements = (OpSysAndVer =?= \"AlmaLinux9\")"    
-
-   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir, transfer=transfer, requirements=req, materialize=materialize)
-
             
 class MyBatchManager:
     '''Batch manager specific to cmsRun processes.''' 
@@ -261,11 +77,11 @@ class MyBatchManager:
                                 default=None)# default set below
 
         self.parser_.add_option("-p", "--pdf", dest="PDFstep",
-                                help="Step of PDF systematic uncertainty evaluation. It could be 1 or 2.",
+                                help="Step of PDF systematic uncertainty evaluation. It could be 1 or 2. [NOTE: option currently broken]",
                                 default=0)
        
         self.parser_.add_option("-s", "--secondary-input-dir", dest="secondaryInputDir",
-                                help="Name of the local input directory for your PDF jobs",
+                                help="Name of the local input directory for your PDF jobs [NOTE: option currently broken]",
                                 default=None)
 
         self.parser_.add_option("-i", "--input", dest="cfgFileName",
@@ -290,24 +106,36 @@ class MyBatchManager:
                                      'Variables and pyFragments specified here in this way have precedence (override) over settings specified in the csv file.'
                                 ,)
 
-        (self.options_,self.args_) = self.parser_.parse_args()
+        self.parser_.add_option("--miniAOD", action="store_true",
+                                dest="isMiniAOD",default =False,
+                                help="create miniAOD jobs (NOTE: option being discontinued)")
 
-
-        if ( len(self.args_)!=1) :
+        
+        (self.options,self.args) = self.parser_.parse_args()
+        
+        if (len(self.args)!=1) :
             print("Please specify sample.csv file to be used.\n")
             sys.exit(1)
+
+        # set default values based on mini/nano
+        if self.options.jobmem == None :
+            if self.options.isMiniAOD == 'miniAOD' :
+                self.options.jobmem = '4000M'
+                self.options.jobflavour = 'tomorrow'
+            else : # nanoAOD
+                self.options.jobmem = '3000M'
+                self.options.jobflavour = 'tomorrow'
+                    
              
-        csvfile = self.args_[0]
+        csvfile = self.args[0]
 
         if (os.path.exists(csvfile) == False ):
             print("File", csvfile, "does not exist; please specify a valid one.\n")
             sys.exit(1)
 
         # Handle output directory
-        outputDir = self.options_.outputDir
+        outputDir = self.options.outputDir
         if outputDir==None:
-#             today = date.today()
-#             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
             gitrevision = subprocess.check_output(['git', "rev-parse", "--short", "HEAD"]) #revision of the git area where the command is exectuted
             outputDir = "PROD_" + csvfile.replace('.csv','') + "_"+gitrevision.decode('utf-8').rstrip()
             print('output directory not specified, using %s' % outputDir)
@@ -315,7 +143,7 @@ class MyBatchManager:
         self.workingDir = str(self.outputDir_)
         if( os.path.isdir(self.outputDir_) == True ):
             inputyn = ''
-            if not self.options_.force:
+            if not self.options.force:
                 while inputyn != 'y' and inputyn != 'n':
                     inputyn = input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n] ' )
             if inputyn == 'n':
@@ -327,16 +155,16 @@ class MyBatchManager:
         with open(os.path.join(self.outputDir_, ".gitignore"), "w") as f:
             f.write("**/*\n")
 
-        #FIXME check this???
-        if not self.options_.secondaryInputDir == None:
-            self.secondaryInputDir_ = os.path.abspath(self.options_.secondaryInputDir) + '/AAAOK/'
+        #FIXME: functionality is likely broken. 
+        if not self.options.secondaryInputDir == None:
+            self.secondaryInputDir_ = os.path.abspath(self.options.secondaryInputDir) + '/AAAOK/'
         else: 
             self.secondaryInputDir_ = None
 
         # Handle optional EOS transfer
         self.eosTransferPath=""
-        if self.options_.transferPath!="":
-            self.eosTransferPath=os.path.join(self.options_.transferPath,outputDir)
+        if self.options.transferPath!="":
+            self.eosTransferPath=os.path.join(self.options.transferPath,outputDir)
             #Check that the specified path is legal. Only eos user areas are supported for the time being
             if not (self.eosTransferPath.startswith('/eos/user/') or self.eosTransferPath.startswith('/eos/home-')) :
                 print('Invalid path for -t:', self.eosTransferPath, ': only paths on /eos/user/ or /eos/home- are supported')
@@ -349,15 +177,11 @@ class MyBatchManager:
             #Create a link to transfer folder
             ret = os.system('ln -s ' + self.eosTransferPath + " " + self.outputDir_ + "/transferPath")
 
-        # Default values for the following are set later, depending on mini/nano
-        self.jobmem = None 
-        self.jobflavour = None
-
         # Extract additional variables specified with -a
         self.addVariables = {}
         self.addPyFragments = {}
-        if self.options_.variables != "" :
-            vars = [s.strip() for s in self.options_.variables.split(";")]
+        if self.options.variables != "" :
+            vars = [s.strip() for s in self.options.variables.split(";")]
             for v in vars:
               bareelement = [s.strip() for s in v.split("=")]
               if len(bareelement) == 2:
@@ -373,7 +197,7 @@ class MyBatchManager:
                   self.addPyFragments[bareelement[0]] = bareelement[0] # Note: this is also handled as a dictionary even if only the key is used later on
               else:
                   # self.addVariables[bareelement[0]] = bareelement[0]
-                  raise ValueError("ERROR: failed to parse -a '" + self.options_.variables + "': cannot parse: '" + v + "'")
+                  raise ValueError("ERROR: failed to parse -a '" + self.options.variables + "': cannot parse: '" + v + "'")
 
     def mkdir( self, dirname ):
        mkdir = 'mkdir -p %s' % dirname
@@ -382,27 +206,206 @@ class MyBatchManager:
          print('please remove or rename directory: ', dirname)
          sys.exit(4)
     
-    
+    def condorSubScript(self, mainDir, eosTransferPath="") :
+       '''prepare the Condor submition script.
+       transferOutput = False skips the automatic CONDOR transfer of output files to the submission dir
+       '''
+
+       home=os.path.expanduser("~")
+       uid=os.getuid()
+
+       transfer = "output_destination = root://eosuser.cern.ch/"+eosTransferPath+"/$(directory)" if eosTransferPath != "" else ""
+
+       if self.options.max_materialize > 0 :
+           materialize = 'max_materialize = '+str(self.options.max_materialize)
+           if self.eosSubmit and transfer == "" : # eossubmit schedd has a bug with setting relative paths with late materialization
+               transfer = f"output_destination = root://eosuser.cern.ch/{mainDir}/$(directory)"
+       else :
+           materialize = ''
+
+       release=open('/etc/redhat-release','r').read()
+       requirements = ""
+       if "release 7" in release:
+           requirements = "requirements = (OpSysAndVer =?= \"CentOS7\")"
+       elif "release 8" in release: #use a Singularity container
+           requirements = "MY.WantOS = \"el8\""
+       elif "release 9" in release:
+           requirements = "requirements = (OpSysAndVer =?= \"AlmaLinux9\")"    
+
+       script = f'''
+executable              = {mainDir}/batchScript.sh
+arguments               = {mainDir}
+initialdir              = $(directory)
+
+output                  = log/$(ClusterId).$(ProcId).out
+error                   = log/$(ClusterId).$(ProcId).err
+# Absolute path to have a single log for the cluster
+log                     = {mainDir}/log/$(ClusterId).log
+
+MY.ChunkDir             = "$(directory)"
+request_memory          = {str(self.options.jobmem)}
+#Possible values: longlunch, workday, tomorrow, etc.; cf. https://batchdocs.web.cern.ch/local/submit.html
++JobFlavour             = "{self.options.jobflavour}"
+{requirements}
+x509userproxy           = {home}/x509up_u{uid}
+
+#cf. https://www-auth.cs.wisc.edu/lists/htcondor-users/2010-September/msg00009.shtml
+periodic_remove         = JobStatus == 5
+
+transfer_input_files = run_cfg.py
+transfer_output_files = log.txt.gz, exitStatus.txt, ZZ4lAnalysis.root
+{transfer}
+{materialize}
+    '''   
+       return script
+
+    def batchScriptMini(self):
+       '''prepare the Condor version of the batch script for miniAOD, to run on HTCondor'''
+    #Note: ${VAR} in the script have to be escaped as ${{VAR}}
+    # as the string is parsed through .format
+       script = """#!/bin/bash
+SUBMIT_DIR=$1
+
+uname -srm
+
+# CMS env needs to be set manually in al9
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh 
+
+set -euo pipefail
+
+cd $SUBMIT_DIR
+eval $(scram ru -sh)
+
+cd $_CONDOR_SCRATCH_DIR
+
+echo 'Running at:' $(date)
+echo "HOST=$(hostname)"
+eos version 2>/dev/null || true
+echo SUBMIT_DIR: $SUBMIT_DIR
+echo path: `pwd`
+
+cmsRunStatus=   #default for successful completion is an empty file
+cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt || cmsRunStatus=$?
+
+echo -n $cmsRunStatus > exitStatus.txt
+if [ -z $cmsRunStatus ]; then cmsRunStatus=0; fi
+echo 'cmsRun done at: ' $(date) with exit status: $cmsRunStatus
+gzip log.txt
+
+set +euo pipefail
+
+export ROOT_HIST=0
+if [ -s ZZ4lAnalysis.root ]; then
+ root -q -b '${CMSSW_BASE}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
+elif [ -f  ZZ4lAnalysis.root ]; then
+ echo moving away empty ZZ4lAnalysis.root file
+ mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
+else
+ echo ERROR: ZZ4lAnalysis.root file is missing
+fi
+
+echo "Files on node:"
+ls -la
+
+#delete mela stuff and $USER.cc
+rm -f br.sm1 br.sm2 ffwarn.dat input.DAT process.DAT "$USER.cc"
+
+#delete submission scripts, so that they are not copied back (which fails sometimes)
+rm -f run_cfg.py batchScript.sh
+
+echo '...done at' $(date)
+
+exit $cmsRunStatus
+""" 
+       return script
+   
+    def batchScriptNano(self):
+       '''prepare the Condor version of the batch script for nanoAOD, to run on HTCondor'''
+       script = '''#!/bin/bash
+SUBMIT_DIR=$1
+
+uname -srm
+
+# CMS env needs to be set manually in al9
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh 
+
+set -euo pipefail
+
+cd $SUBMIT_DIR
+eval $(scram ru -sh)
+
+cd $_CONDOR_SCRATCH_DIR
+
+echo 'Running at:' $(date)
+echo "HOST=$(hostname)"
+eos version 2>/dev/null || true
+echo SUBMIT_DIR: $SUBMIT_DIR
+echo path: `pwd`
+
+exitStatus=   #default for successful completion is an empty file
+python3 run_cfg.py >& log.txt || exitStatus=$?
+
+echo -n $exitStatus > exitStatus.txt
+if [ -z $exitStatus ]; then exitStatus=0; fi
+echo 'job done at: ' $(date) with exit status: $exitStatus
+gzip log.txt
+
+export ROOT_HIST=0
+if [ -s ZZ4lAnalysis.root ]; then
+   root -q -b '${CMSSW_BASE}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
+elif [ -f  ZZ4lAnalysis.root ]; then
+   echo "ERROR: ZZ4lAnalysis.root is empty"
+   if [ $exitStatus -eq "0"  ]; then exitStatus=999; fi
+else
+   echo ERROR: ZZ4lAnalysis.root file is missing
+   # The output file MUST be present when the condor transfer_output_files option is used.
+   touch ZZ4lAnalysis.root
+   if [ $exitStatus -eq "0"  ]; then exitStatus=999; fi
+fi
+
+echo "Files on node:"
+ls -la
+
+echo '...done at' $(date)
+
+exit $exitStatus
+'''
+       return script
 
        
     def PrepareJobs(self, listOfValues, listOfDirNames=None):
         print('PREPARING JOBS ======== ')
         self.listOfJobs_ = []
 
+        # Write the condor.sub file
+        condorscriptFileName = os.path.join(self.outputDir_, 'condor.sub')
+        with open(condorscriptFileName,'w') as condorscriptFile:
+            condorscriptFile.write(self.condorSubScript(self.outputDir_,self.eosTransferPath))
+
+        # prepare the batch script (common to all jobs)
+        scriptFileName = os.path.join(self.outputDir_, 'batchScript.sh')
+        scriptFile = open(scriptFileName,'w')
+        if self.options.isMiniAOD :
+            scriptFile.write( self.batchScriptMini() )
+        else :
+            scriptFile.write( self.batchScriptNano() )
+        scriptFile.close()
+        os.system('chmod +x %s' % scriptFileName)
+        
+        # create job folders
         if listOfDirNames is None:
             for value in listOfValues:
                 self.PrepareJob( value )
         else:
             for value, name in zip( listOfValues, listOfDirNames):
                 self.PrepareJob( value, name )
-        if self.options_.verbose:
+                
+        if self.options.verbose:
             print("list of jobs:")
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint( self.listOfJobs_)
-
-        condorscriptFileName = os.path.join(self.outputDir_, 'condor.sub')
-        with open(condorscriptFileName,'w') as condorscriptFile:
-            condorscriptFile.write(condorSubScript(value, self.outputDir_,self.eosTransferPath))
 
     def PrepareJob( self, value, dirname=None):
        '''Prepare a job for a given value.
@@ -411,29 +414,6 @@ class MyBatchManager:
        '''
        print('---PrepareJob N: ', value,  ' name: ', dirname)
 
-       # Set requirements
-       inputType='miniAOD'
-       variables = splitComponents[value].variables
-       if ('JOBTYPE' in variables and variables['JOBTYPE'].casefold() == 'nanoaod') or \
-           'nanoaod' in (splitComponents[value].files)[0].casefold() : 
-           inputType='nanoAOD'
-       # set default values based on mini/nano
-       self.max_materialize =  self.options_.max_materialize
-       if inputType == 'miniAOD' :
-           self.jobmem = '4000M'
-       else : # nanoAOD
-           self.jobmem = '3000M'
-       if self.options_.jobmem != None :
-           self.jobmem = self.options_.jobmem
-
-       if self.jobflavour == None:
-           if self.options_.jobflavour != None:
-               self.jobflavour = self.options_.jobflavour
-           else :
-               if inputType == 'miniAOD' :
-                   self.jobflavour = 'tomorrow'
-               else :
-                   self.jobflavour = 'tomorrow'
            
        dname = dirname
        if dname  is None:
@@ -445,25 +425,14 @@ class MyBatchManager:
        if not self.secondaryInputDir_ == None: self.inputPDFDir_ = '/'.join( [self.secondaryInputDir_, dname])
 
        if dirname.endswith('Chunk0'):
-           self.PrepareJobUserTemplate( jobDir, value, inputType)
-       self.PrepareJobUserFromTemplate(jobDir, value, inputType)
+           self.PrepareJobUserTemplate(jobDir, value)
+       self.PrepareJobUserFromTemplate(jobDir, value)
 
-    def PrepareJobUserFromTemplate(self, jobDir, value, inputType="miniAOD"):
-        scriptFileName = jobDir+'/batchScript.sh'
-        scriptFile = open(scriptFileName,'w')
-        if inputType=="miniAOD" :
-            scriptFile.write( batchScript( value, self.eosTransferPath ) )
-        elif inputType=="nanoAOD":
-            scriptFile.write( batchScriptNano( value, self.eosTransferPath ) )
-        scriptFile.close()
-        os.system('chmod +x %s' % scriptFileName)
+    def PrepareJobUserFromTemplate(self, jobDir, value):
         template_name = splitComponents[value].samplename + 'run_template_cfg.py'
 
-#       working_dir = os.path.dirname(self.outputDir_)
-
-
         template_file_name = '%s/%s'%(self.outputDir_, template_name) #splitComponents[value].samplename + '_run_template_cfg.py' 
-#        shutil.copyfile(template_file_name, '%s/run_cfg.py'%jobDir)  
+
         new_job_path = '%s/run_cfg.py'%jobDir
         files = splitComponents[value].files 
         files = ["'%s'"%f for f in files]
@@ -473,22 +442,15 @@ class MyBatchManager:
                 for line in f :
                     if line.find('REPLACE')  > 1 :
                         actual_source_string = ""
-                        if inputType=="miniAOD" :
+                        if self.options.isMiniAOD :
                             actual_source_string = "fileNames = cms.untracked.vstring(%s),\n"%files
-                        elif inputType=="nanoAOD" :
+                        else :
                             actual_source_string = 'setConf("fileNames",%s)\n'%splitComponents[value].files
                         line = actual_source_string
                     new_job_cfg.write(line)
  
-    def PrepareJobUserTemplate(self, jobDir, value, inputType="miniAOD" ):
+    def PrepareJobUserTemplate(self, jobDir, value):
        '''Prepare one job. This function is called by the base class.'''
-
-       #prepare the batch script
-       scriptFileName = jobDir+'/batchScript.sh'
-       scriptFile = open(scriptFileName,'w')
-       scriptFile.write( batchScript( value ) )
-       scriptFile.close()
-       os.system('chmod +x %s' % scriptFileName)
        
        variables = splitComponents[value].variables | self.addVariables
        pyFragments = splitComponents[value].pyFragments
@@ -498,7 +460,7 @@ class MyBatchManager:
            variables['IsMC'] = True
            if 'PD' in variables and not variables['PD'] == '': variables['IsMC'] = False
 
-       if self.options_.verbose:
+       if self.options.verbose:
            print('value ',value)
            print('scv ',splitComponents[value].name)
        
@@ -513,7 +475,7 @@ class MyBatchManager:
 
        cfgFile = open('%s/%s'%(self.outputDir_, template_name),'w')
 
-       if inputType=="miniAOD":
+       if self.options.isMiniAOD :
            if cfgFileName == '' : # note this is a global variable, cannot be overwritten
                cfgFileName_ = 'analyzer_batch.py'
            else :
@@ -550,7 +512,7 @@ class MyBatchManager:
                cfgSnippetPDFStep2.close()
 
 
-       elif inputType=="nanoAOD" :
+       else : # nanoAOD
             cfgFile.write('from ZZAnalysis.NanoAnalysis.tools import getConf, setConf\n')
             # Copy fragments in their specified order
             for fragment in pyFragments:
@@ -632,14 +594,14 @@ if __name__ == '__main__':
         
     batchManager = MyBatchManager(eosSubmit)
     
-    cfgFileName = batchManager.options_.cfgFileName # This is the python job config.
-    sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./
+    cfgFileName = batchManager.options.cfgFileName # This is the python job config.
+    sampleCSV  = batchManager.args[0]            # This is the csv file with samples to be analyzed./
 
     components = []
     sampleDB = readSampleDB(sampleCSV)
     for sample, settings in sampleDB.items():
         if settings['execute']:
-            pdfstep = batchManager.options_.PDFstep
+            pdfstep = batchManager.options.PDFstep
             components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], pdfstep,cfgFileName)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
 
