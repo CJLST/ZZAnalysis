@@ -57,6 +57,9 @@ if getConf("APPLY_K_NNLOQCD_ZZQQB") or getConf("APPLY_K_NLOEW_ZZQQB"):
 # Add separate tree with gen info for all events
 
 IsSIGNAL = getConf("IsSIGNAL", False)
+if not IsMC and IsSIGNAL:
+   print("ERROR: IsSIGNAL flag is invalid for IsMC==True")
+   exit(1)
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", IsSIGNAL) # if true, add a separate tree with gen-level variables for all events (not just those passing the candidate selection); by default, this is done for signal samples
 
 # Add LHE angles and probabilities. This is in general the case whenever ADD_ALLEVENTS is true (ie for signals)

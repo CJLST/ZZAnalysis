@@ -19,7 +19,6 @@ class RecoProbFiller(Module):
         self.NANOVERSION = NANOVERSION
         self.MELASettings = MELASettings
         self.processCR = processCR
-        self.EFthreshold = 0.5 # threshold of leptons pt over jet pt to veto the jet, to be reapplied to the varied jets. See the nominal one in jetFiller.py
         self.probHelpers = {"ZZCand": MELAProbHelper(self.MELA, self.MELASettings, "Reco", candColl="ZZCand")}
         if self.processCR:
             self.probHelpers["ZLLCand"] = MELAProbHelper(self.MELA, self.MELASettings, "Reco", candColl="ZLLCand")
@@ -116,21 +115,15 @@ class RecoProbFiller(Module):
 
     def _selectVariedJets(self, jets, variation):
         """Return shifted leading/subleading jets after the nominal selection.
-
-        Jet-lepton cleaning is reevaluated because ``Jet_ZZLepEF`` has the
-        nominal jet pt in its denominator.  Nothing from this temporary
-        selection is written to the output tree.
         """
         selected = []
         pt_name = variation + "_pt"
         mass_name = variation + "_mass"
         for idx, jet in enumerate(jets):
-            if jet.jetId != 6 and abs(jet.eta) <= 5.0 :
+            if (not jet.ZZId) or jet.ZZMask : 
                 continue
             pt = getattr(jet, pt_name)
-            leptonPt = jet.ZZLepEF * jet.pt
-            overlapsLeptons = pt <= 0. or leptonPt / pt > self.EFthreshold
-            if overlapsLeptons or pt <= jet.ptThreshold:
+            if pt <= jet.ptThreshold:
                 continue
             mass = getattr(jet, mass_name)
             selected.append((pt, idx, mass))
