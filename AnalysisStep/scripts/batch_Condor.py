@@ -97,7 +97,7 @@ class MyBatchManager:
                                 help="full path of /eos/user area to transfer output files, in the respective PROD/Chunk subfolders. Note that log files will still be sent back to the submission folder.",)
 
         self.parser_.add_option("-M", "--max_materialize", dest="max_materialize",
-                                default=200,
+                                default=500,
                                 help="cap the number of concurrently running jobs to mitigate load on AFS or /eos mount",)
 
         self.parser_.add_option("-a", "--add-variables", dest="variables",
@@ -216,7 +216,7 @@ class MyBatchManager:
 
        transfer = "output_destination = root://eosuser.cern.ch/"+eosTransferPath+"/$(directory)" if eosTransferPath != "" else ""
 
-       if self.options.max_materialize > 0 :
+       if int(self.options.max_materialize) > 0 :
            materialize = 'max_materialize = '+str(self.options.max_materialize)
            if self.eosSubmit and transfer == "" : # eossubmit schedd has a bug with setting relative paths with late materialization
                transfer = f"output_destination = root://eosuser.cern.ch/{mainDir}/$(directory)"
